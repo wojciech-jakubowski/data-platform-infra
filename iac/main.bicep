@@ -31,14 +31,14 @@ module config 'config.bicep' = {
   }
 }
 
-module networking 'networking.bicep' = {
+module networking 'networking/networking.bicep' = {
   name: 'networking'
   params: {
     config: config.outputs.values
   }
 }
 
-module keyvault 'keyvault.bicep' = {
+module keyvault 'key-vault.bicep' = {
   name: 'keyvault'
   params: {
     config: config.outputs.values
