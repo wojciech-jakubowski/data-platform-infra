@@ -12,6 +12,11 @@ param projectName string
 @description('Name of the environment - dev, test, uat or prod')
 param envName string
 
+@minLength(36)
+@maxLength(36)
+@description('Object id of the indentity that deploys the infrastructure')
+param deployerObjectId string
+
 @description('Location of the environment - by default westeurope')
 param location string = resourceGroup().location
 
@@ -21,6 +26,7 @@ module config 'config.bicep' = {
     clientName: clientName
     projectName: projectName
     envName: envName
+    deployerObjectId: deployerObjectId
     location: location
   }
 }
@@ -29,5 +35,13 @@ module networking 'networking.bicep' = {
   name: 'networking'
   params: {
     config: config.outputs.values
+  }
+}
+
+module keyvault 'keyvault.bicep' = {
+  name: 'keyvault'
+  params: {
+    config: config.outputs.values
+    networking: networking.outputs.values
   }
 }

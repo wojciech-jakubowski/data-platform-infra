@@ -10,6 +10,9 @@
       },
       "envName": {
         "value": "dev"
+      },
+      "deployerObjectId": {
+        "value": "3c0f380d-19c6-4148-86d6-ab6a0590be95"
       }
     }
   }
