@@ -62,11 +62,14 @@ var dnsZonesObjectArray = [for (dnsZone, i) in items(privateDnsZones): {
 }]
 
 // ugly hack due to lack of built-in function that converts an array to an object
-var dnsZonesObjectArrayString = replace(replace(replace(string(dnsZonesObjectArray), '[{', '{'), '}},{', '},'), '}]', '}')
+var dnsZonesObjectArrayString = replace(replace(replace(string(dnsZonesObjectArray), '[{', '{'), '},{', ','), '}]', '}')
 var dnsZonesObject = json(dnsZonesObjectArrayString)
 
 
 output values object = {
   vnetId: vnet.id
+  mainSubnetId: vnet.properties.subnets[0].id
+  secondarySubnetId: vnet.properties.subnets[1].id
   privateDnsZones: dnsZonesObject
+  vnet: vnet
 }
