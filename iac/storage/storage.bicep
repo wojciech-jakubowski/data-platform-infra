@@ -7,5 +7,7 @@ module datalake 'storageAccount.bicep' = {
     config: config
     name: 'dl'
     networking: networking
+    isHnsEnabled: true
+    containers: ['raw', 'conformed', 'curated']
   }
 }
