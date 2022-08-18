@@ -38,8 +38,16 @@ module networking 'networking/networking.bicep' = {
   }
 }
 
-module keyvault 'key-vault.bicep' = {
-  name: 'keyvault'
+module keyVault 'keyVault/keyVault.bicep' = {
+  name: 'keyVault'
+  params: {
+    config: config.outputs.values
+    networking: networking.outputs.values
+  }
+}
+
+module storage 'storage/storage.bicep' = {
+  name: 'storage'
   params: {
     config: config.outputs.values
     networking: networking.outputs.values

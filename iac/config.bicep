@@ -6,6 +6,7 @@ param deployerObjectId string
 
 var configValues = {
   namePrefix: '${clientName}-${projectName}-${envName}'
+  dashlessNamePrefix: '${clientName}${projectName}${envName}'
   location: location
   tenantId: tenant().tenantId
   deployerObjectId: deployerObjectId

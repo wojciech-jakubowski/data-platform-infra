@@ -5,6 +5,7 @@ var networkAddressPart = '${config.networkAddress.firstOctet}.${config.networkAd
 var privateDnsZones = {
   kv: 'privatelink.vaultcore.azure.net'
   dl: 'privatelink.dfs.core.windows.net'
+  bl: 'blob.core.windows.net'
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' = {

@@ -34,7 +34,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-module kvPrivateEndpoint 'networking/private-endpoint.bicep' = {
+module kvPrivateEndpoint '../networking/private-endpoint.bicep' = {
   name: 'kvPrivateEndpoint'
   params: {
     config: config
