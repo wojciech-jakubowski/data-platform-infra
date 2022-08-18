@@ -55,8 +55,6 @@ resource dnsZoneLinks 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@202
   }
 }]
 
-
-
 var dnsZonesObjectArray = [for (dnsZone, i) in items(privateDnsZones): {
   '${dnsZone.key}': dnsZones[i].id
 }]

@@ -1,7 +1,7 @@
 param config object
 param networking object
 
-resource keyvault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: '${config.namePrefix}'
   location: '${config.location}'
   properties: {
@@ -34,57 +34,28 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-resource secretZ 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-  name: 'mySecretY'
-  parent: keyvault  
-  properties: {
-    value: 'mySecretValueYT'
-  }
-}
-
-resource secretA 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-  name: 'mySecretA'
-  parent: keyvault  
-  properties: {
-    value: 'mySecretValueA'
-  }
-}
-
-
-var privateEndpointName = '${config.namePrefix}-kv-pe'
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: privateEndpointName
-  location: config.location
-  properties: {
-    subnet: {
-      id: networking.mainSubnetId
+module kvPrivateEndpoint 'networking/private-endpoint.bicep' = {
+  name: 'kvPrivateEndpoint'
+  params: {
+    config: config
+    dnsZones: {
+      kv: networking.privateDnsZones.kv
     }
-    privateLinkServiceConnections: [
-      {
-        name: privateEndpointName
-        properties: {
-          privateLinkServiceId: keyvault.id
-          groupIds: [
-            'vault'
-          ]
-        }
-      }
-    ]
+    endpointType: 'vault'
+    parentId: keyVault.id
+    parentName: keyVault.name
+    subnetId: networking.mainSubnetId
   }
 }
 
-var pvtEndpointDnsGroupName = '${config.namePrefix}-kv-dns-group'
-resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-05-01' = {
-  name: pvtEndpointDnsGroupName
-  parent: privateEndpoint
+resource secret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: 'sampleSecret'
+  parent: keyVault  
   properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: '${config.namePrefix}-kv-dns-group-config'
-        properties: {
-          privateDnsZoneId: networking.privateDnsZones.kv
-        }
-      }
-    ]
+    value: 'sampleSecretValue'
   }
+
+  dependsOn: [
+    kvPrivateEndpoint
+  ]
 }

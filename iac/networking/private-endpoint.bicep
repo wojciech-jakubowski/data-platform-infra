@@ -1,10 +1,10 @@
 param config object
 param parentId string
 param parentName string
-param nameSuffix string 
+param nameSuffix string = ''
 param endpointType string
 param subnetId string
-param dnsGroups object
+param dnsZones object
 
 var fullSuffix = empty(nameSuffix) ? '' : '-${nameSuffix}'
 var privateEndpointName = '${parentName}${fullSuffix}-pe'
@@ -35,10 +35,10 @@ resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneG
   name: pvtEndpointDnsGroupName
   parent: privateEndpoint
   properties: {
-    privateDnsZoneConfigs: [for dnsGroup in items(dnsGroups): {
-        name: '${pvtEndpointDnsGroupName}-${dnsGroup.key}-config'
+    privateDnsZoneConfigs: [for dnsZone in items(dnsZones): {
+        name: '${pvtEndpointDnsGroupName}-${dnsZone.key}-config'
         properties: {
-          privateDnsZoneId: dnsGroup.value
+          privateDnsZoneId: dnsZone.value
         }
       }]
   }
