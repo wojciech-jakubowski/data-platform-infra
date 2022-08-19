@@ -2,16 +2,6 @@ param config object
 
 var networkAddressPart = '${config.networkAddress.firstOctet}.${config.networkAddress.secondOctet}.${config.networkAddress.thirdOctet}'
 
-var privateDnsZones = {
-  kv: 'privatelink.vaultcore.azure.net'
-  dl: 'privatelink.dfs.core.windows.net'
-  bl: 'blob.core.windows.net'
-  mon: 'privatelink.monitor.azure.com'
-  ods: 'privatelink.ods.opinsights.azure.com'
-  oms: 'privatelink.oms.opinsights.azure.com'
-  asc: 'privatelink.agentsvc.azure-automation.net'
-}
-
 resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' = {
   name: '${config.namePrefix}-vnet'
   location: config.location
@@ -37,6 +27,17 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' = {
        }
     ]
   }
+  tags: config.tags
+}
+
+var privateDnsZones = {
+  kv: 'privatelink.vaultcore.azure.net'
+  dl: 'privatelink.dfs.core.windows.net'
+  bl: 'blob.core.windows.net'
+  mon: 'privatelink.monitor.azure.com'
+  ods: 'privatelink.ods.opinsights.azure.com'
+  oms: 'privatelink.oms.opinsights.azure.com'
+  asc: 'privatelink.agentsvc.azure-automation.net'
 }
 
 resource dnsZones 'Microsoft.Network/privateDnsZones@2020-06-01' = [for dnsZone in items(privateDnsZones): {
@@ -46,6 +47,7 @@ resource dnsZones 'Microsoft.Network/privateDnsZones@2020-06-01' = [for dnsZone 
   dependsOn: [
     vnet
   ]
+  tags: config.tags
 }]
 
 resource dnsZoneLinks 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for (dnsZone, i) in items(privateDnsZones): {
@@ -58,6 +60,7 @@ resource dnsZoneLinks 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@202
       id: vnet.id
     }
   }
+  tags: config.tags
 }]
 
 var dnsZonesObjectArray = [for (dnsZone, i) in items(privateDnsZones): {

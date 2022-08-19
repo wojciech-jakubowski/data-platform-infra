@@ -10,6 +10,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
     name: 'PerGB2018'
    } 
   } 
+  tags: config.tags
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -20,6 +21,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     Application_Type: ' '
     WorkspaceResourceId: logAnalyticsWorkspace.id
   }
+  tags: config.tags
 }
 
 
@@ -32,9 +34,10 @@ resource privateLinkScope 'microsoft.insights/privateLinkScopes@2021-07-01-previ
       queryAccessMode: 'PrivateOnly'
     }
   }
+  tags: config.tags
 }
 
-module pesPrivateEndpoint '../networking/private-endpoint.bicep' = {
+module privateEndpoint '../networking/private-endpoint.bicep' = {
   name: 'pesPrivateEndpoint'
   params: {
     config: config
@@ -60,7 +63,7 @@ resource privateLinkScopeLogAnalyticsConnection 'Microsoft.Insights/privateLinkS
   }
 
   dependsOn: [
-    pesPrivateEndpoint    
+    privateEndpoint    
   ]
 }
 
@@ -72,6 +75,10 @@ resource privateLinkScopeAppInsightsConnection 'Microsoft.Insights/privateLinkSc
   }
 
   dependsOn: [
-    pesPrivateEndpoint    
+    privateEndpoint    
   ]
+}
+
+output values object = {
+  logAnalyticsWorkspaceId: logAnalyticsWorkspace.id
 }

@@ -38,11 +38,20 @@ module networking 'networking/networking.bicep' = {
   }
 }
 
+module monitoring 'monitoring/monitoring.bicep' = {
+  name: 'monitoring'
+  params: {
+    config: config.outputs.values
+    networking: networking.outputs.values
+  }
+}
+
 module keyVault 'keyVault/keyVault.bicep' = {
   name: 'keyVault'
   params: {
     config: config.outputs.values
     networking: networking.outputs.values
+    monitoring: monitoring.outputs.values
   }
 }
 
@@ -51,13 +60,6 @@ module storage 'storage/storage.bicep' = {
   params: {
     config: config.outputs.values
     networking: networking.outputs.values
-  }
-}
-
-module monitoring 'monitoring/monitoring.bicep' = {
-  name: 'monitoring'
-  params: {
-    config: config.outputs.values
-    networking: networking.outputs.values
+    monitoring: monitoring.outputs.values
   }
 }

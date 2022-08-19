@@ -15,6 +15,10 @@ var configValues = {
     secondOctet: 0
     thirdOctet: 0
   }
+  tags: {
+    tagOne: 'tagOneValue'
+    tagTwo: 'tagTwoValue'
+  }
 }
 
 //output resourcePrefix string = config.prefix

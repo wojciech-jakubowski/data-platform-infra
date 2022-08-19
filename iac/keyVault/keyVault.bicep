@@ -1,5 +1,6 @@
 param config object
 param networking object
+param monitoring object
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: '${config.namePrefix}'
@@ -32,9 +33,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       }
     ]
   }
+  tags: config.tags
 }
 
-module kvPrivateEndpoint '../networking/private-endpoint.bicep' = {
+module privateEndpoint '../networking/private-endpoint.bicep' = {
   name: 'kvPrivateEndpoint'
   params: {
     config: config
@@ -56,6 +58,42 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
   }
 
   dependsOn: [
-    kvPrivateEndpoint
+    privateEndpoint
   ]
+}
+
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${keyVault.name}-diagnosticSettings'
+  scope: keyVault
+  properties:{
+    workspaceId: monitoring.logAnalyticsWorkspaceId
+    logs: [
+      {
+        category: 'AuditEvent'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+      // {
+      //   category: 'AzurePolicyEvaluationDetails'
+      //   enabled: true
+      //   retentionPolicy: {
+      //     days: 0
+      //     enabled: true
+      //   }
+      // }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+    ]
+  }
 }

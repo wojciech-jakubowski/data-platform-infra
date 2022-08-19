@@ -1,11 +1,12 @@
 param config object
 param networking object
+param monitoring object
 param name string
 param isHnsEnabled bool = false
 param containers array = []
 
 
-resource storage_account 'Microsoft.Storage/storageAccounts@2021-09-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: '${config.dashlessNamePrefix}${name}sa'
   location: config.location
   sku: {
@@ -28,9 +29,10 @@ resource storage_account 'Microsoft.Storage/storageAccounts@2021-09-01' = {
       defaultAction: 'Deny'
     }
   }
+  tags: config.tags
 }
 
-module dlPrivateEndpoint '../networking/private-endpoint.bicep' = {
+module privateEndpoint '../networking/private-endpoint.bicep' = {
   name: 'dlPrivateEndpoint'
   params: {
     config: config
@@ -38,18 +40,18 @@ module dlPrivateEndpoint '../networking/private-endpoint.bicep' = {
       kv: networking.privateDnsZones.kv
     }
     endpointType: isHnsEnabled ? 'dfs' : 'blob'
-    parentId: storage_account.id
-    parentName: storage_account.name
+    parentId: storageAccount.id
+    parentName: storageAccount.name
     subnetId: networking.mainSubnetId
   }
 }
 
 resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-09-01' = {
   name: 'default'
-  parent: storage_account
+  parent: storageAccount
 
   dependsOn: [
-    dlPrivateEndpoint
+    privateEndpoint
   ]
 }
 
@@ -60,3 +62,55 @@ resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containe
     publicAccess:'None'
   }
 }]
+
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${storageAccount.name}-blob-diagnosticSettings'
+  scope: blobServices
+  properties:{
+    workspaceId: monitoring.logAnalyticsWorkspaceId
+    logs: [
+      {
+        category: 'StorageRead'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+      {
+        category: 'StorageWrite'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+      {
+        category: 'StorageWrite'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+      {
+        category: 'StorageDelete'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy: {
+          days: 0
+          enabled: true
+        }
+      }
+    ]
+  }
+}
