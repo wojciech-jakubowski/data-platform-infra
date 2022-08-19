@@ -24,7 +24,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 
 
 resource privateLinkScope 'microsoft.insights/privateLinkScopes@2021-07-01-preview' = {
-  name: 'privateLinkScope'
+  name: '${config.namePrefix}-pes'
   location: 'global'
   properties: {
     accessModeSettings: {
@@ -53,7 +53,7 @@ module pesPrivateEndpoint '../networking/private-endpoint.bicep' = {
 }
 
 resource privateLinkScopeLogAnalyticsConnection 'Microsoft.Insights/privateLinkScopes/scopedResources@2021-07-01-preview' = {
-  name: 'privateLinkScopeLogAnalyticsConnection'
+  name: '${privateLinkScope.name}-log-connection'
   parent: privateLinkScope
   properties: {
     linkedResourceId: logAnalyticsWorkspace.id
@@ -65,7 +65,7 @@ resource privateLinkScopeLogAnalyticsConnection 'Microsoft.Insights/privateLinkS
 }
 
 resource privateLinkScopeAppInsightsConnection 'Microsoft.Insights/privateLinkScopes/scopedResources@2021-07-01-preview' = {
-  name: 'privateLinkScopeAppInsightsConnection'
+  name: '${privateLinkScope.name}-ai-connection'
   parent: privateLinkScope
   properties: {
     linkedResourceId: appInsights.id
