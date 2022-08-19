@@ -20,7 +20,7 @@ param deployerObjectId string
 @description('Location of the environment - by default westeurope')
 param location string = resourceGroup().location
 
-module config 'config.bicep' = {
+module config 'config/config.bicep' = {
   name: 'config'
   params:{
     clientName: clientName
@@ -48,6 +48,14 @@ module keyVault 'keyVault/keyVault.bicep' = {
 
 module storage 'storage/storage.bicep' = {
   name: 'storage'
+  params: {
+    config: config.outputs.values
+    networking: networking.outputs.values
+  }
+}
+
+module monitoring 'monitoring/monitoring.bicep' = {
+  name: 'monitoring'
   params: {
     config: config.outputs.values
     networking: networking.outputs.values

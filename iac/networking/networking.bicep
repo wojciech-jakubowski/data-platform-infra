@@ -6,6 +6,10 @@ var privateDnsZones = {
   kv: 'privatelink.vaultcore.azure.net'
   dl: 'privatelink.dfs.core.windows.net'
   bl: 'blob.core.windows.net'
+  mon: 'privatelink.monitor.azure.com'
+  ods: 'privatelink.ods.opinsights.azure.com'
+  oms: 'privatelink.oms.opinsights.azure.com'
+  asc: 'privatelink.agentsvc.azure-automation.net'
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' = {
