@@ -116,7 +116,7 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: '${config.namePrefix}'
+  name: '${config.namePrefix}-kv'
 }
 
 resource secret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
