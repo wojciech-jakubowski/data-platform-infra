@@ -3,7 +3,7 @@ param networking object
 param monitoring object
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: '${config.namePrefix}'
+  name: '${config.namePrefix}-kv'
   location: '${config.location}'
   properties: {
     sku: {

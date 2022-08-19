@@ -114,3 +114,15 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
     ]
   }
 }
+
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: '${config.namePrefix}'
+}
+
+resource secret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${config.dashlessNamePrefix}${name}saAccountKey'
+  parent: keyVault  
+  properties: {
+    value: storageAccount.listKeys().keys[0].value
+  }
+}

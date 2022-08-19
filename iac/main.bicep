@@ -62,4 +62,7 @@ module storage 'storage/storage.bicep' = {
     networking: networking.outputs.values
     monitoring: monitoring.outputs.values
   }
+  dependsOn: [
+    keyVault
+  ]
 }
